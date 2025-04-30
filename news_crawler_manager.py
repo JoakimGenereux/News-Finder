@@ -31,7 +31,8 @@ class NewsCrawlerManager:
     def load_api_key(self):
         try:
             with open(self.api_key_path, 'r') as f:
-                return json.load(f)
+                api = json.load(f)
+                return api.get("api_key")
         except FileNotFoundError:
             raise FileNotFoundError(f"The file '{self.api_key_path}' was not found.")
         except json.JSONDecodeError:
@@ -166,7 +167,7 @@ class NewsCrawlerManager:
 
     def ingest_articles_to_elasticsearch(self):
         # Get today's news-please extraction folder
-        today = datetime.datetime.now()
+        today = datetime.datetime.now(datetime.timezone.utc)
         today_path = os.path.join(
             self.data_root,
             today.strftime("%Y"),

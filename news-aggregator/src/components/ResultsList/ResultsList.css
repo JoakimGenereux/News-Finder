@@ -1,7 +1,7 @@
 .results-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 1rem;
     width: 100%;
   }
   .article {
