@@ -1,0 +1,30 @@
+.search-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    border-bottom: 1px solid #000;
+    border-bottom-color: inherit
+    ;
+    position: relative;
+  }
+  .search-bar input {
+    flex: 1;
+    padding: 12px 45px 12px 12px;
+    font-size: 1.3rem;
+    border: none;
+    outline: none;
+    background-color: inherit;
+    color: inherit;
+  }
+  .search-bar button {
+    position: absolute;
+    right: 0;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    padding: 12px;
+    cursor: pointer;
+    color: inherit;
+  }
