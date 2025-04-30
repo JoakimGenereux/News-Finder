@@ -1,0 +1,1 @@
+My startup would work on a news search/news aggregator application. Users will be able to enter a query, and the application will return a list of relevant articles. Key features include search function, indexing & storage, relevance ranking, source filtering.
