@@ -1,6 +1,4 @@
 import os
-import threading
-import multiprocessing
 import datetime
 import time
 import signal
@@ -11,6 +9,21 @@ import shutil
 from elasticsearch import Elasticsearch, helpers
 from sentence_transformers import SentenceTransformer
 import numpy as np
+
+'''
+Citation for News-Please
+
+@InProceedings{Hamborg2017,
+  author     = {Hamborg, Felix and Meuschke, Norman and Breitinger, Corinna and Gipp, Bela},
+  title      = {news-please: A Generic News Crawler and Extractor},
+  year       = {2017},
+  booktitle  = {Proceedings of the 15th International Symposium of Information Science},
+  location   = {Berlin},
+  doi        = {10.5281/zenodo.4120316},
+  pages      = {218--223},
+  month      = {March}
+}
+'''
 
 # Class that manages news-please CLI crawler configuration and execution
 class NewsCrawlerManager:
@@ -94,76 +107,6 @@ class NewsCrawlerManager:
             print(f"Failed to start 'news-please': {e}")
         finally:
             print("news-please has been terminated.")
-
-    """"
-    def ingest_articles_to_elasticsearch(self):
-        # Get today's news-please extraction folder
-        today = datetime.datetime.now()
-        today_path = os.path.join(
-            self.data_root,
-            today.strftime("%Y"),
-            today.strftime("%m"),
-            today.strftime("%d")
-        )
-
-        if not os.path.exists(today_path):
-            print(f"No data found for today at {today_path}")
-            return
-
-        # Walk every source folder and read all JSON file
-        index_groups = {}
-        for root, _, files in os.walk(today_path):
-            for file in files:
-                if file.endswith(".json"):
-                    file_path = os.path.join(root, file)
-                    try:
-                        with open(file_path, "r") as f:
-                            article = json.load(f)
-
-                            maintext = article.get("maintext")
-                            if not maintext:
-                                continue  # Skip if maintext is null
-                            pub_date = article.get("date_publish")
-                            if pub_date:
-                                pub_date_trunc = datetime.datetime.strptime(pub_date, "%Y-%m-%d %H:%M:%S")
-                                index_name = f"news-please-{pub_date_trunc.strftime('%Y-%m-%d')}"
-                            else:
-                                # Fall back on today's date if no publish-date found
-                                index_name = f"news-please-{datetime.datetime.now().strftime('%Y-%m-%d')}"
-
-                            doc_id = article.get("url")
-                            if not doc_id:
-                                continue  # Skip if no unique identifier
-
-                            action = {
-                                "_op_type": "create",
-                                "_index": index_name,
-                                "_id": doc_id,
-                                "_source": article
-                            }
-
-                            index_groups.setdefault(index_name, []).append(action)
-                    except Exception as e:
-                        print(f"Failed to read {file_path}: {e}")
-
-        # Ingest all articles to Elasticsearch
-        for index_name, actions in index_groups.items():
-            if actions:
-                try:
-                    helpers.bulk(self.es, actions)
-                    print(f"Successfully indexed {len(actions)} articles into {index_name}.")
-                except Exception as e:
-                    print(f"Bulk indexing failed for {index_name}: {e}")
-
-        # Delete the extraction folder
-        for entry in os.listdir(self.data_root):
-            entry_path = os.path.join(self.data_root, entry)
-            if os.path.isdir(entry_path):
-                try:
-                    shutil.rmtree(entry_path)
-                    print(f"Successfully removed directory: {entry_path}")
-                except Exception as e:
-                    print(f"Failed to remove directory {entry_path}: {e}") """
 
     def ingest_articles_to_elasticsearch(self):
         # Get today's news-please extraction folder
@@ -250,7 +193,7 @@ class NewsCrawlerManager:
                     print(f"Failed to remove directory {entry_path}: {e}")
 
     # Update the config file and run the crawler
-    def update_and_run(self, crawler_type='SitemapCrawler', from_days=8, to_days=0, duration_minutes=120):
+    def update_and_run(self, crawler_type='SitemapCrawler', from_days=1, to_days=0, duration_minutes=60):
         self.update_date_range(from_days, to_days)
         self.update_crawler_type(crawler_type)
         self.run_news_please(duration_minutes)
