@@ -63,7 +63,7 @@ async def latest(es: AsyncElasticsearch = Depends(get_es_client)):
     # Get articles by date_publish in descending order
     body = {
         "sort": [{"date_publish": {"order": "desc"}}],
-        "size": 20
+        "size": 50
     }
 
     # Perform the search
@@ -91,16 +91,6 @@ async def search(query: str = Query(..., min_length=1),
     task = 'Given a search query, retrieve relevant news articles.'
     prompt = f"Instruct: {task}\nQuery: {query}"
     query_embedding = model.encode(prompt)
-
-    # Assemble the bool.must
-    must_clause = {
-        "match": {
-            "title": {
-                "query": query,
-                "boost": 0.9
-            }
-        }
-    }
 
     # Assemble the optional filters
     filter_clauses = []
