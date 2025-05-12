@@ -91,6 +91,7 @@ Alternatively, start each in its own terminal:
 
 To retrieve articles, Double-click `run_crawler.bat` (or run `.\run_crawler.bat` in PowerShell).
 Details about the crawling process can be found in `news_crawler_manager.py`.
+
 ---
 
 ## Acknowledgments
