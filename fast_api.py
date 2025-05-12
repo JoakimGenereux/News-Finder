@@ -133,19 +133,31 @@ async def search(query: str = Query(..., min_length=1),
     body = {
         "query": {
             "bool": {
-                "must": [must_clause],
+                "must": [
+                    {
+                        "multi_match": {
+                            "query":  query,
+                            "fields": ["title", "maintext"],
+                            "boost":  0.9
+                        }
+                    }
+                ],
+                "should": [
+                    {
+                        "knn": {
+                            "field": "maintext_vector",
+                            "query_vector": query_embedding,
+                            "k": 10,
+                            "num_candidates": 500,
+                            "boost": 0.1
+                        }
+                    }
+                ],
+                # only include filter key if we have filters
                 **({"filter": filter_clauses} if filter_clauses else {})
             }
         },
-        "knn": {
-            "field": "maintext_vector",
-            "query_vector": query_embedding.tolist(),
-            "k": 5,
-            "num_candidates": 200,
-            "boost": 0.1,
-            **({"filter": filter_clauses} if filter_clauses else {})
-        },
-        "size": 10
+        "size": 50
     }
 
     # Perform the search
